@@ -65,7 +65,7 @@ func TestWriteRead(t *testing.T) {
 	}
 
 	// Write rump dump from shared message bus
-	target := file.New(path, ch, false, false)
+	target := file.New(path, ch, false, false, 60*1024)
 	if err := target.Write(ctx); err != nil {
 		t.Error("error: ", err)
 	}
@@ -74,7 +74,7 @@ func TestWriteRead(t *testing.T) {
 	ch2 := make(message.Bus, 100)
 
 	// Read rump dump file
-	source2 := file.New(path, ch2, false, false)
+	source2 := file.New(path, ch2, false, false, 60*1024)
 	if err := source2.Read(ctx); err != nil {
 		t.Error("error: ", err)
 	}
