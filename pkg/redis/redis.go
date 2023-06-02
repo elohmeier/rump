@@ -90,11 +90,10 @@ func (r *Redis) Read(ctx context.Context) error {
 
 		select {
 		case <-ctx.Done():
-			fmt.Println("")
-			fmt.Println("redis read: exit")
+			fmt.Println("redis: done reading")
 			return ctx.Err()
 		case r.Bus <- message.Payload{Key: key, Value: value, TTL: ttl}:
-			r.maybeLog("r")
+			fmt.Printf("redis: DUMP %s => ttl=%s, size=%d\n", key, ttl, len(value))
 		}
 	}
 
@@ -108,8 +107,7 @@ func (r *Redis) Write(ctx context.Context) error {
 		select {
 		// Exit early if context done.
 		case <-ctx.Done():
-			fmt.Println("")
-			fmt.Println("redis write: exit")
+			fmt.Println("redis: done writing")
 			return ctx.Err()
 		// Get Messages from Bus
 		case p, ok := <-r.Bus:
@@ -122,7 +120,7 @@ func (r *Redis) Write(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
-			r.maybeLog("w")
+			fmt.Printf("redis: RESTORE %s ttl=%s \n", p.Key, p.TTL)
 		}
 	}
 

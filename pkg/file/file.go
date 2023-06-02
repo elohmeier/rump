@@ -90,7 +90,7 @@ func (f *File) Read(ctx context.Context) error {
 			fmt.Println("file read: exit")
 			return ctx.Err()
 		case f.Bus <- message.Payload{Key: key, Value: value, TTL: ttl}:
-			f.maybeLog("r")
+			fmt.Printf("file: read %s => ttl=%s, size=%d\n", key, ttl, len(value))
 		}
 	}
 
@@ -119,8 +119,7 @@ func (f *File) Write(ctx context.Context) error {
 		select {
 		// Exit early if context done.
 		case <-ctx.Done():
-			fmt.Println("")
-			fmt.Println("file write: exit")
+			fmt.Println("file: done")
 			return ctx.Err()
 		// Get Messages from Bus
 		case p, ok := <-f.Bus:
@@ -133,7 +132,7 @@ func (f *File) Write(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
-			f.maybeLog("w")
+			fmt.Printf("file: write %s => ttl=%s, size=%d\n", p.Key, p.TTL, len(p.Value))
 		}
 	}
 
